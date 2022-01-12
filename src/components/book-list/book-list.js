@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import BookListItem from '../book-list-item';
 import './book-list.css';
 
+import { connect } from 'react-redux';
+
 class BookList extends Component {
 
   render() {
@@ -24,4 +26,9 @@ class BookList extends Component {
 
 };
 
-export default BookList;
+
+const mapState = (state) => {
+  return {books: state.books};
+};
+
+export default connect(mapState)(BookList);

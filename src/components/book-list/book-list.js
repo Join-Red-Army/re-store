@@ -4,25 +4,32 @@ import BookListItem from '../book-list-item';
 import { WithBookstoreService } from '../hoc';
 import { booksLoaded, booksRequested } from '../../actions';
 import { compose } from '../../utils';
+import { booksError } from '../../actions';
 import './book-list.css';
 
 import Spinner from '../spinner';
+import ErrorIndicator from '../error-indicator';
 
 class BookList extends Component {
   
   componentDidMount() {
     // получить данные из сервиса,
     // затем задиспатчить их в store
-    const { bookstoreService, booksLoaded, booksRequested } = this.props;
+    const { bookstoreService, booksLoaded, booksRequested, booksError } = this.props;
     booksRequested();
     bookstoreService.getBooks()
-      .then((data) => booksLoaded(data));
+      .then((data) => booksLoaded(data))
+      .catch((err) => booksError(err));
   }
 
   render() {
-    const { books, loading } = this.props;
+    const { books, loading, error } = this.props;
 
     if (loading) return <Spinner />
+
+    if (error) {
+      return <ErrorIndicator/>
+    }
 
     return (
       <ul className="book-list">
@@ -43,10 +50,10 @@ class BookList extends Component {
 
 
 const mapState = (state) => {
-  return {books: state.books, loading: state.loading};
+  return {books: state.books, loading: state.loading, error: state.error};
 };
 
-const mapDispatch = {booksLoaded, booksRequested};
+const mapDispatch = {booksLoaded, booksRequested, booksError};
 
 export default compose(
   WithBookstoreService(),

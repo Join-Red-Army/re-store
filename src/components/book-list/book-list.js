@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import BookListItem from '../book-list-item';
 import { WithBookstoreService } from '../hoc';
-import { booksLoaded, booksRequested } from '../../actions';
+import { fetchBooks } from '../../actions';
 import { compose } from '../../utils';
 import { booksError } from '../../actions';
 import './book-list.css';
@@ -47,20 +47,12 @@ const mapState = (state) => {
   return {books: state.books, loading: state.loading, error: state.error};
 };
 
-// const mapDispatch = {booksLoaded, booksRequested, booksError};
+
+// const mapDispatch = (dispatch, { bookstoreService } ) => {
 const mapDispatch = (dispatch, ownProps) => {
   const { bookstoreService } = ownProps;
-  return {
-    fetchBooks: () => {
-      dispatch(booksRequested());
-
-      bookstoreService.getBooks()
-        .then((data) => dispatch(booksLoaded(data)) )
-        .catch((err) => dispatch(booksError(err)) );
-    }
-
-  }
-}
+  return { fetchBooks: fetchBooks(bookstoreService, dispatch) };
+};
 
 export default compose(
   WithBookstoreService(),
